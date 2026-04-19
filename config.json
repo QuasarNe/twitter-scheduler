@@ -1,0 +1,15 @@
+{
+  "schedule": [
+    {
+      "time": "09:00",
+      "message": "早安！今天又是美好的一天 🌅"
+    },
+    {
+      "time": "14:00",
+      "message": "下午好！希望你今天过得充实 ✨"
+    }
+  ],
+  "timezone": "Asia/Shanghai",
+  "retry_failed": true,
+  "max_retries": 3
+}
