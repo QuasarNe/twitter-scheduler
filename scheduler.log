@@ -1,0 +1,10 @@
+2026-04-20 03:55:17,249 - INFO - ✅ Twitter API 客户端已连接
+2026-04-20 03:55:17,249 - INFO - 🚀 启动定时发推服务...
+2026-04-20 03:55:17,283 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-20 03:55:17,283 - INFO - 📅 已安排: 每日 09:00 发送 - 早安！今天又是美好的一天 🌅
+2026-04-20 03:55:17,283 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-04-20 03:55:17,283 - INFO - 📅 已安排: 每日 14:00 发送 - 下午好！希望你今天过得充实 ✨
+2026-04-20 03:55:17,285 - INFO - Added job "每日 09:00 发送推文" to job store "default"
+2026-04-20 03:55:17,285 - INFO - Added job "每日 14:00 发送推文" to job store "default"
+2026-04-20 03:55:17,285 - INFO - Scheduler started
+2026-04-20 03:55:17,285 - INFO - ✅ 定时发推服务已启动，将在 24 小时后自动停止
