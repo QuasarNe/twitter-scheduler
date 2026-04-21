@@ -116,7 +116,7 @@ def check_mentions_and_reply():
     try:
         config = load_config()
         # 获取机器人自身的 ID
-        me = twitter_client.get_me().data
+        me = twitter_client.get_me(user_auth=True).data
         bot_id = me.id
         
         # 获取最近的提及
@@ -124,7 +124,8 @@ def check_mentions_and_reply():
         mentions = twitter_client.get_users_mentions(
             id=bot_id, 
             tweet_fields=['created_at', 'conversation_id', 'referenced_tweets'],
-            max_results=10
+            max_results=10,
+            user_auth=True
         )
         
         if not mentions.data:
@@ -138,20 +139,19 @@ def check_mentions_and_reply():
 
         for tweet in mentions.data:
             tweet_id = str(tweet.id)
+            logger.info(f"检测到提及: {tweet.text[:50]}... (ID: {tweet_id})")
             if tweet_id in replied_ids:
+                logger.info(f"跳过: 已回复 (ID: {tweet_id})")
                 continue
             
-            # --- 限制回复层数（1层）核心逻辑 ---
-            is_first_layer = True
-            if tweet.referenced_tweets:
-                for ref in tweet.referenced_tweets:
-                    if ref.type == 'replied_to':
-                        # 如果这条推文是在回复别人（而不是直接发起对话提及我们），则跳过
-                        is_first_layer = False
-                        break
-            
-            if not is_first_layer:
+            # --- 检查是否仅提及本账号 ---
+            import re
+            mentioned_users = re.findall(r'@(\w+)', tweet.text)
+            if len(mentioned_users) > 1 or (len(mentioned_users) == 1 and mentioned_users[0].lower() != me.username.lower()):
+                logger.info(f"跳过: 提及了其他账号或多个账号 (ID: {tweet_id})")
                 continue
+
+            logger.info(f"处理提及: {tweet.text[:50]}... (ID: {tweet_id})")
 
             logger.info(f"🔍 发现新的提及: {tweet.text}")
             
