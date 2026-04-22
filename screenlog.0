@@ -1,3 +1,0 @@
-2026-04-21 04:23:41,920 - INFO - Running job "自动检查提及并回复 (trigger: interval[0:05:00], next run at: 2026-04-21 04:23:41 CST)" (scheduled at 2026-04-21 04:23:41.915024+08:00)
-2026-04-21 04:23:42,642 - ERROR - ❌ 自动回复循环出错: 403 Forbidden
-2026-04-21 04:23:42,644 - INFO - Job "自动检查提及并回复 (trigger: interval[0:05:00], next run at: 2026-04-21 04:28:41 CST)" executed successfully

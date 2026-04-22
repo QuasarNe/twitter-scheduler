@@ -1,6 +1,12 @@
 # Twitter Scheduler 不要提交到版本控制
 .env
+.python-version
 tweet_history.log
+tweet_history_*.log
+replied_tweets_*.log
+scheduler.log
+scheduler_old.log
+screenlog.*
 
 # Python
 __pycache__/
@@ -28,6 +34,7 @@ share/python-wheels/
 MANIFEST
 
 # 虚拟环境
+.venv/
 venv/
 ENV/
 env/
