@@ -4,6 +4,7 @@
 screenlog.*
 *.log
 CONTENT_config.json
+CONTENT_config.public.json
 # Python
 __pycache__/
 *.py[cod]
