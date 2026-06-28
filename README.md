@@ -1,6 +1,6 @@
 # Twitter Scheduler
 
-一个基于 Twitter API v2 和 OpenAI 的自动化推文调度和回复系统。支持多账号管理、AI 生成内容、定时发推和自动回复提及。
+一个基于 X API 和 OpenAI API 的自动化推文调度和回复系统。支持多账号管理、AI 生成内容、定时发推和自动回复提及。
 
 ## ✨ 主要功能
 
@@ -10,12 +10,9 @@
 - **自动回复**: 自动回复 @提及，支持智能过滤和去重防刷。
 - **日志记录**: 详细的运行日志和推文历史追踪。
 
-## 🛠 技术栈
+## 使用方法
 
-- **语言**: Python 3.14+
-- **框架**: APScheduler (定时任务), Tweepy (Twitter API 交互), OpenAI (AI 生成)
-- **环境管理**: [uv](https://github.com/astral-sh/uv) (极速 Python 包和环境管理器)
-- **配置**: JSON 配置文件 + 环境变量
+需要一个 X 开发者账号和 OpenAI API Key。请确保您已在 [X Developer Console](https://developer.x.com/) 创建应用并获取必要的 API 凭据。
 
 ## 🚀 安装和运行
 
@@ -65,9 +62,10 @@ TEST_MODE=true python twitter_scheduler.py
 - `tweet_history_{account}.log`: 推文发布历史
 - `replied_tweets_{account}.log`: 已回复记录
 
-## ⚠️ 注意事项
+## 注意事项
 
+- 如果管理多个账号，**与 X Developer Console 登录账号不同的账号需要用 authorize_new_app.py 进行授权来获取 access token。**
 - 确保您的 Twitter API 凭据具有正确的读写 (Read and Write) 权限。
 - 必须提供 OpenAI API Key 才能进行内容生成。
-- **合规性**: 请严格遵守 [Twitter 开发者协议和政策](https://developer.twitter.com/en/developer-terms/agreement-and-policy)，避免过度自动化或垃圾信息行为。
+- 合规性: 遵守 [Twitter 开发者协议和政策](https://developer.twitter.com/en/developer-terms/agreement-and-policy)，避免过度自动化或垃圾信息行为。
 - 定期监控日志文件以排查潜在问题。
