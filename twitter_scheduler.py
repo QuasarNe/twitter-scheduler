@@ -87,11 +87,73 @@ def send_tweet(client, account_name, message, in_reply_to_tweet_id=None):
         # 记录到历史文件
         with open(f'tweet_history_{account_name}.log', 'a', encoding='utf-8') as f:
             f.write(f"{datetime.now().isoformat()} - ID: {tweet_id} - {message}\n")
+
+        # 非回复推文：记录 ID 并立即触发本地 ID 驱动的自动转发
+        if not in_reply_to_tweet_id:
+            with open(f'local_tweet_ids_{account_name}.log', 'a', encoding='utf-8') as f:
+                f.write(f"{tweet_id}\n")
+            process_local_tweet_id_retweets(account_name)
         
         return True
     except tweepy.TweepyException as e:
         logger.error(f"❌ 账号 {account_name} 发送失败: {e}")
         return False
+
+
+def process_local_tweet_id_retweets(source_account_name):
+    """基于本地记录的推文 ID 进行自动转发（不扫描时间线）"""
+    source_ids_file = f'local_tweet_ids_{source_account_name}.log'
+    if not os.path.exists(source_ids_file):
+        return
+
+    try:
+        with open(source_ids_file, 'r', encoding='utf-8') as f:
+            source_tweet_ids = [line.strip() for line in f if line.strip()]
+
+        if not source_tweet_ids:
+            return
+
+        config = load_config()
+        accounts = config.get('accounts', [])
+
+        for account in accounts:
+            target_account_name = account.get('name')
+            runtime = account.get('runtime', {})
+
+            if not runtime.get('enable_auto_retweet_from_account', False):
+                continue
+            if runtime.get('auto_retweet_source_account') != source_account_name:
+                continue
+
+            target_client = twitter_clients.get(target_account_name)
+            if not target_client:
+                logger.warning(f"⚠️ 自动转发跳过：账号 {target_account_name} 客户端未初始化")
+                continue
+
+            retweeted_file = f'retweeted_{target_account_name}_from_{source_account_name}.log'
+            retweeted_ids = set()
+            if os.path.exists(retweeted_file):
+                with open(retweeted_file, 'r', encoding='utf-8') as f:
+                    retweeted_ids = {line.strip() for line in f if line.strip()}
+
+            for tweet_id in source_tweet_ids:
+                if tweet_id in retweeted_ids:
+                    continue
+
+                try:
+                    target_client.retweet(tweet_id, user_auth=True)
+                    logger.info(
+                        f"🔁 账号 {target_account_name} 已转发 {source_account_name} 的推文 (ID: {tweet_id})"
+                    )
+                    with open(retweeted_file, 'a', encoding='utf-8') as f:
+                        f.write(f"{tweet_id}\n")
+                    retweeted_ids.add(tweet_id)
+                except Exception as e:
+                    logger.error(
+                        f"❌ 账号 {target_account_name} 转发 {source_account_name} 推文失败 (ID: {tweet_id}): {e}"
+                    )
+    except Exception as e:
+        logger.error(f"❌ 处理本地推文 ID 自动转发失败 ({source_account_name}): {e}")
 
 
 def generate_ai_content(prompt, context="", account_config=None):
@@ -257,7 +319,7 @@ def schedule_tweets(clients, config):
 
         # 如果启用自动回复，添加检查任务
         if enable_auto_reply:
-            interval = runtime.get('check_mentions_interval_minutes', 5)
+            interval = runtime.get('check_mentions_interval_minutes', 30)
             scheduler.add_job(
                 check_mentions_and_reply,
                 'interval',
@@ -269,6 +331,18 @@ def schedule_tweets(clients, config):
             logger.info(f"📅 已启用账号 {account_name} 自动回复，每 {interval} 分钟检查")
         else:
             logger.info(f"📅 账号 {account_name} 自动回复已关闭")
+
+        # 自动转发由 send_tweet 成功后基于本地 ID 直接触发，无需扫描任务
+        if runtime.get('enable_auto_retweet_from_account', False):
+            source_account_name = runtime.get('auto_retweet_source_account')
+            if source_account_name:
+                logger.info(
+                    f"📅 账号 {account_name} 已启用本地 ID 驱动自动转发，来源账号: {source_account_name}"
+                )
+            else:
+                logger.warning(
+                    f"⚠️ 账号 {account_name} 已开启自动转发，但未配置 auto_retweet_source_account"
+                )
     
     return scheduler
 

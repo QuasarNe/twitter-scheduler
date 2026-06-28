@@ -1,13 +1,9 @@
 # Twitter Scheduler 不要提交到版本控制
 .env
 .python-version
-tweet_history.log
-tweet_history_*.log
-replied_tweets_*.log
-scheduler.log
-scheduler_old.log
 screenlog.*
-
+*.log
+CONTENT_config.json
 # Python
 __pycache__/
 *.py[cod]

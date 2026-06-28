@@ -24,9 +24,11 @@
                 }
             },
             "runtime": {//默认值
-                "check_mentions_interval_minutes": 5,
+                "check_mentions_interval_minutes": 30,
                 "enable_auto_reply": true,
-                "enable_auto_like_mentions": false//在上一选项启用后才生效
+                "enable_auto_like_mentions": false,//在上一选项启用后才生效
+                "enable_auto_retweet_from_account": false,
+                "auto_retweet_source_account": "来源账号名"
             }
         }
     ]
@@ -53,3 +55,10 @@
 - Twitter 凭据从 Developer Portal 获取
 - 时区影响定时任务
 - 日志: scheduler.log, tweet_history_{account}.log
+
+## 自动转发说明
+
+- 将目标账号的 `runtime.enable_auto_retweet_from_account` 设为 `true`。
+- 使用 `runtime.auto_retweet_source_account` 指定来源账号名（必须与 `accounts[].name` 完全一致）。
+- 来源账号每次通过本地脚本发送“非回复推文”时，会先把 tweet ID 记录到本地文件，再立即触发目标账号转发。
+- 该机制不扫描时间线，不依赖定时轮询。
